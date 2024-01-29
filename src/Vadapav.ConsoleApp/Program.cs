@@ -13,5 +13,5 @@
                 var results = await x.SearchFilesAsync(Guid.NewGuid().ToString());
             }
         }
-    }sds
+    }
 }

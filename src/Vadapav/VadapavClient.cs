@@ -35,7 +35,7 @@ namespace Vadapav
         public async Task<VadapavDirectory> GetRootDirectoryAsync()
         {
             var response = await _client.GetFromJsonAsync<VadapavDirectoryResponse>(EndPointProvider.Root) ??
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("Failed to get root directory.");
 
             return response.Data.AsDirectory();
         }
@@ -63,7 +63,7 @@ namespace Vadapav
                 id);
 
             var response = await _client.GetFromJsonAsync<VadapavDirectoryResponse>(endpoint) ??
-                throw new InvalidOperationException("Failed to get directory '' because vadapav.mov replied with a non-successful status code");
+                throw new InvalidOperationException($"Failed to get directory '{id}'.");
 
             return response.Data.AsDirectory();
         }
@@ -91,7 +91,7 @@ namespace Vadapav
                 id);
 
             var response = await _client.GetStreamAsync(requestUri) ??
-                throw new InvalidOperationException("");
+                throw new InvalidOperationException($"Failed to get file '{id}'.");
 
             return response;
         }
@@ -106,7 +106,7 @@ namespace Vadapav
                 searchTerm);
 
             var response = await _client.GetFromJsonAsync<VadapavSearchResponse>(requestUri) ??
-                throw new InvalidOperationException("");
+                throw new InvalidOperationException($"Failed to get search results for search term '{searchTerm}'.");
 
             return response.Data.WrapAsSearchResults();
         }
