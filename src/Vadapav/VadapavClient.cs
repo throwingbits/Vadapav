@@ -10,23 +10,19 @@ namespace Vadapav
     {
         private readonly HttpClient _client;
 
-        /// <summary>
-        /// Creates a new instance of the <see cref="VadapavClient"/> and supports configuration of the inner retry handler.
-        /// </summary>
-        /// <param name="maxRetryCount">How often requests should be retried before bubbling up a exception.</param>
-        public VadapavClient(ushort maxRetryCount = 5)
+        public VadapavClient(string baseAddress, ushort maxRetryCount = 5)
+            : this(new Uri(baseAddress), maxRetryCount)
+        {
+        }
+
+        public VadapavClient(Uri baseAddress, ushort maxRetryCount = 5)
         {
             _client = new HttpClient(new HttpRetryMessageHandler(maxRetryCount))
             {
-                BaseAddress = new Uri("https://vadapav.mov")
+                BaseAddress = baseAddress
             };
         }
 
-        /// <summary>
-        /// Creates a new instance of the <see cref="VadapavClient"/> and supports bringing your own <see cref="HttpClient"/> instance.
-        /// </summary>
-        /// <param name="client"></param>
-        /// <exception cref="ArgumentException"></exception>
         public VadapavClient(HttpClient client)
         {
             _client = client ?? throw new ArgumentException(null, nameof(client));
@@ -99,7 +95,7 @@ namespace Vadapav
 
             var contentDisposition = contentDispositionValues.First();
 
-            // this is ugly as hell but works at the moment. We should fix that at backend level)
+            // this is ugly as hell but works at the moment. We should fix that at backend level
             var fileName = contentDisposition.Replace("attachment; filename=", string.Empty);
 
             if (string.IsNullOrWhiteSpace(fileName))

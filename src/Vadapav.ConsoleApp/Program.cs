@@ -4,7 +4,7 @@
     {
         static async Task Main()
         {
-            var client = new VadapavClient();
+            var client = new VadapavClient("https://vadapav.mov");
 
             await RootDirectoryExample(client);
             await GetDirectoryExample(client);
