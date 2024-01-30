@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Vadapav.ConsoleApp
+﻿namespace Vadapav.ConsoleApp
 {
     internal class Program
     {
