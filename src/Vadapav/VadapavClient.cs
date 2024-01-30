@@ -68,7 +68,7 @@ namespace Vadapav
             return response.Data.AsDirectory();
         }
 
-        public Task<Stream> GetFileAsync(VadapavFile file)
+        public Task<(string Name, Stream ContentStream)> GetFileAsync(VadapavFile file)
         {
             ArgumentNullException
                 .ThrowIfNull(file);
@@ -76,12 +76,12 @@ namespace Vadapav
             return GetFileAsync(file.Id);
         }
 
-        public Task<Stream> GetFileAsync(Guid id)
+        public Task<(string Name, Stream ContentStream)> GetFileAsync(Guid id)
         {
             return GetFileAsync(id.ToString());
         }
 
-        public async Task<Stream> GetFileAsync(string id)
+        public async Task<(string Name, Stream ContentStream)> GetFileAsync(string id)
         {
             ArgumentException
                 .ThrowIfNullOrWhiteSpace(id);
@@ -90,10 +90,24 @@ namespace Vadapav
                 EndPointProvider.File,
                 id);
 
-            var response = await _client.GetStreamAsync(requestUri) ??
-                throw new InvalidOperationException($"Failed to get file '{id}'.");
+            var response = await _client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
 
-            return response;
+            response.EnsureSuccessStatusCode();
+
+            if (!response.Content.Headers.TryGetValues("Content-Disposition", out var contentDispositionValues))
+                throw new InvalidOperationException("");
+
+            var contentDisposition = contentDispositionValues.First();
+
+            // this is ugly as hell but works at the moment. We should fix that at backend level)
+            var fileName = contentDisposition.Replace("attachment; filename=", string.Empty);
+
+            if (string.IsNullOrWhiteSpace(fileName))
+                throw new InvalidOperationException("Failed to get file name.");
+
+            var contentStream = await response.Content.ReadAsStreamAsync();
+
+            return (fileName, contentStream);
         }
 
         public async Task<VadapavSearchResults> SearchAsync(string searchTerm)

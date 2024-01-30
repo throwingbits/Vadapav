@@ -7,7 +7,7 @@
         internal const string Root = $"{Base}/d";
         internal const string Search = $"{Base}/s";
         internal const string Directory = $"{Base}/d";
-        internal const string File = $"{Base}/f";
+        internal const string File = $"/f";
 
         internal static string Create(string @base, string value)
         {

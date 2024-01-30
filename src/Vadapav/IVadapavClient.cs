@@ -5,9 +5,9 @@ namespace Vadapav
     public interface IVadapavClient
     {
         Task<VadapavDirectory> GetRootDirectoryAsync();
-        Task<Stream> GetFileAsync(VadapavFile file);
-        Task<Stream> GetFileAsync(string id);
-        Task<Stream> GetFileAsync(Guid id);
+        Task<(string Name, Stream ContentStream)> GetFileAsync(VadapavFile file);
+        Task<(string Name, Stream ContentStream)> GetFileAsync(string id);
+        Task<(string Name, Stream ContentStream)> GetFileAsync(Guid id);
         Task<VadapavDirectory> GetDirectoryAsync(VadapavDirectory directory);
         Task<VadapavDirectory> GetDirectoryAsync(string id);
         Task<VadapavDirectory> GetDirectoryAsync(Guid id);
