@@ -29,6 +29,7 @@ namespace Vadapav
             _client = client ?? throw new ArgumentException(null, nameof(client));
         }
 
+        /// <inheritdoc/>
         public async Task<VadapavDirectory> GetRootDirectoryAsync()
         {
             var response = await _client.GetFromJsonAsync<VadapavDirectoryResponse>(EndPointProvider.Root) ??
@@ -37,6 +38,7 @@ namespace Vadapav
             return response.Data.AsDirectory();
         }
 
+        /// <inheritdoc/>
         public Task<VadapavDirectory> GetDirectoryAsync(VadapavDirectory directory)
         {
             ArgumentNullException
@@ -45,11 +47,13 @@ namespace Vadapav
             return GetDirectoryAsync(directory.Id);
         }
 
+        /// <inheritdoc/>
         public Task<VadapavDirectory> GetDirectoryAsync(Guid id)
         {
             return GetDirectoryAsync(id.ToString());
         }
 
+        /// <inheritdoc/>
         public async Task<VadapavDirectory> GetDirectoryAsync(string id)
         {
             ArgumentException
@@ -65,6 +69,7 @@ namespace Vadapav
             return response.Data.AsDirectory();
         }
 
+        /// <inheritdoc/>
         public Task<(string Name, Stream ContentStream)> GetFileAsync(VadapavFile file)
         {
             ArgumentNullException
@@ -73,11 +78,13 @@ namespace Vadapav
             return GetFileAsync(file.Id);
         }
 
+        /// <inheritdoc/>
         public Task<(string Name, Stream ContentStream)> GetFileAsync(Guid id)
         {
             return GetFileAsync(id.ToString());
         }
 
+        /// <inheritdoc/>
         public async Task<(string Name, Stream ContentStream)> GetFileAsync(string id)
         {
             ArgumentException
@@ -99,6 +106,7 @@ namespace Vadapav
             return (fileName, contentStream);
         }
 
+        /// <inheritdoc/>
         public Task<(string Name, Stream ContentStream)> GetFileRangeAsync(VadapavFile file, long from, long to)
         {
             ArgumentNullException
@@ -107,11 +115,13 @@ namespace Vadapav
             return GetFileRangeAsync(file.Id, from, to);
         }
 
+        /// <inheritdoc/>
         public Task<(string Name, Stream ContentStream)> GetFileRangeAsync(Guid id, long from, long to)
         {
             return GetFileRangeAsync(id.ToString(), from, to);
         }
 
+        /// <inheritdoc/>
         public async Task<(string Name, Stream ContentStream)> GetFileRangeAsync(string id, long from, long to)
         {
             ArgumentException
@@ -137,6 +147,7 @@ namespace Vadapav
             return (fileName, contentStream);
         }
 
+        /// <inheritdoc/>
         public async Task<VadapavSearchResults> SearchAsync(string searchTerm)
         {
             ArgumentException
@@ -152,6 +163,7 @@ namespace Vadapav
             return response.Data.WrapAsSearchResults();
         }
 
+        /// <inheritdoc/>
         public async Task<List<VadapavFile>> SearchFilesAsync(string searchTerm)
         {
             ArgumentException
@@ -162,6 +174,7 @@ namespace Vadapav
             return results.Files;
         }
 
+        /// <inheritdoc/>
         public async Task<List<VadapavDirectory>> SearchDirectoriesAsync(string searchTerm)
         {
             ArgumentException
