@@ -105,7 +105,7 @@ namespace Vadapav
         }
 
         /// <inheritdoc/>
-        public Task<(string Name, Stream ContentStream)> GetFileRangeAsync(VadapavFile file, long from, long to)
+        public Task<(string Name, Stream ContentStream)> GetFileRangeAsync(VadapavFile file, long from, long? to)
         {
             ArgumentNullException
                 .ThrowIfNull(file);
@@ -114,13 +114,13 @@ namespace Vadapav
         }
 
         /// <inheritdoc/>
-        public Task<(string Name, Stream ContentStream)> GetFileRangeAsync(Guid id, long from, long to)
+        public Task<(string Name, Stream ContentStream)> GetFileRangeAsync(Guid id, long from, long? to)
         {
             return GetFileRangeAsync(id.ToString(), from, to);
         }
 
         /// <inheritdoc/>
-        public async Task<(string Name, Stream ContentStream)> GetFileRangeAsync(string id, long from, long to)
+        public async Task<(string Name, Stream ContentStream)> GetFileRangeAsync(string id, long from, long? to)
         {
             ArgumentException
                 .ThrowIfNullOrWhiteSpace(id);
@@ -143,6 +143,53 @@ namespace Vadapav
             var contentStream = await response.Content.ReadAsStreamAsync();
 
             return (fileName, contentStream);
+        }
+
+        /// <inheritdoc/>
+        public Task DownloadFileAsync(VadapavFile file, string path, bool resume = true)
+        {
+            ArgumentNullException
+                .ThrowIfNull(file);
+
+            return DownloadFileAsync(file.Id, path);
+        }
+
+        /// <inheritdoc/>
+        public Task DownloadFileAsync(Guid id, string path, bool resume = true)
+        {
+            return DownloadFileAsync(id.ToString(), path);
+        }
+
+        /// <inheritdoc/>
+        public async Task DownloadFileAsync(string id, string path, bool resume = true)
+        {
+            ArgumentException
+                .ThrowIfNullOrWhiteSpace(id);
+
+            ArgumentException
+                .ThrowIfNullOrWhiteSpace(path);
+
+            (string Name, Stream ContentStream) file;
+
+            if (File.Exists(path))
+            {
+                if (!resume)
+                    throw new IOException("The file already exists and the resume parameter is set to: false");
+
+                using var localFile = File.OpenRead(path);
+                var localFileLength = localFile.Length;
+
+                file = await GetFileRangeAsync(id, localFileLength, null);
+            }
+            else
+            {
+                file = await GetFileAsync(id);
+            }
+
+            using (var fs = new FileStream(path, FileMode.Create))
+            {
+                await file.ContentStream.CopyToAsync(fs);
+            }
         }
 
         /// <inheritdoc/>
