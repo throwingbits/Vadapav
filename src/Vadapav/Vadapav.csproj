@@ -4,6 +4,30 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Vadapav</Title>
+    <Authors>throwingbits</Authors>
+    <PackageProjectUrl>https://github.com/throwingbits/vadapav/tree/main</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/throwingbits/vadapav/tree/main</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>client;library;csharp;media;download</PackageTags>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageIcon>vadapav.png</PackageIcon>
+    <Copyright>Copyright (c) 2024 throwingbits</Copyright>
+    <Description>Client library for vadapav.</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="D:\Downloads\vadapav.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
