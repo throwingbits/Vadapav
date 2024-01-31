@@ -17,10 +17,15 @@
     <PackageIcon>vadapav.png</PackageIcon>
     <Copyright>Copyright (c) 2024 throwingbits</Copyright>
     <Description>Client library for vadapav.</Description>
+    <PackageReadmeFile>README-NuGet.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README-NuGet.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
