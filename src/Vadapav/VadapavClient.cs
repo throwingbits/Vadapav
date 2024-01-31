@@ -94,8 +94,6 @@ namespace Vadapav
                 EndPointProvider.File,
                 id);
 
-            _client.DefaultRequestHeaders.Range = new RangeHeaderValue(0, 500);
-
             var response = await _client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
 
             response.EnsureSuccessStatusCode();
@@ -187,13 +185,10 @@ namespace Vadapav
 
         private string GetFileNameFromResponse(HttpResponseMessage response)
         {
-            if (!response.Content.Headers.TryGetValues("Content-Disposition", out var contentDispositionValues))
-                throw new InvalidOperationException("Failed to retrieve Content-Disposition header.");
-
-            var contentDisposition = contentDispositionValues.First();
-
-            // this is ugly as hell but works at the moment. We should fix that at backend level
-            var fileName = contentDisposition.Replace("attachment; filename=", string.Empty);
+            var contentDispositionHeader = response.Content.Headers.ContentDisposition ?? 
+                throw new InvalidOperationException("The server response did not contain the Content-Disposition header.");
+            
+            var fileName = contentDispositionHeader.FileNameStar;
 
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new InvalidOperationException("Failed to get file name from Content-Disposition header.");
