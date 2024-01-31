@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 using Vadapav.Http;
 using Vadapav.Models;
@@ -86,21 +87,51 @@ namespace Vadapav
                 EndPointProvider.File,
                 id);
 
+            _client.DefaultRequestHeaders.Range = new RangeHeaderValue(0, 500);
+
             var response = await _client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
 
             response.EnsureSuccessStatusCode();
 
-            if (!response.Content.Headers.TryGetValues("Content-Disposition", out var contentDispositionValues))
-                throw new InvalidOperationException("");
+            var fileName = GetFileNameFromResponse(response);
+            var contentStream = await response.Content.ReadAsStreamAsync();
 
-            var contentDisposition = contentDispositionValues.First();
+            return (fileName, contentStream);
+        }
 
-            // this is ugly as hell but works at the moment. We should fix that at backend level
-            var fileName = contentDisposition.Replace("attachment; filename=", string.Empty);
+        public Task<(string Name, Stream ContentStream)> GetFileRangeAsync(VadapavFile file, long from, long to)
+        {
+            ArgumentNullException
+                .ThrowIfNull(file);
 
-            if (string.IsNullOrWhiteSpace(fileName))
-                throw new InvalidOperationException("Failed to get file name.");
+            return GetFileRangeAsync(file.Id, from, to);
+        }
 
+        public Task<(string Name, Stream ContentStream)> GetFileRangeAsync(Guid id, long from, long to)
+        {
+            return GetFileRangeAsync(id.ToString(), from, to);
+        }
+
+        public async Task<(string Name, Stream ContentStream)> GetFileRangeAsync(string id, long from, long to)
+        {
+            ArgumentException
+                .ThrowIfNullOrWhiteSpace(id);
+
+            if (from > to)
+                throw new InvalidOperationException($"The value of the parameter {nameof(from)} needs to be less than the value of the parameter {nameof(to)}.");
+
+            var requestUri = EndPointProvider.Create(
+                EndPointProvider.File,
+                id);
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            request.Headers.Range = new RangeHeaderValue(from, to);
+
+            var response = await _client.SendAsync(request);
+
+            response.EnsureSuccessStatusCode();
+
+            var fileName = GetFileNameFromResponse(response);
             var contentStream = await response.Content.ReadAsStreamAsync();
 
             return (fileName, contentStream);
@@ -139,6 +170,22 @@ namespace Vadapav
             var results = await SearchAsync(searchTerm);
 
             return results.Directories;
+        }
+
+        private string GetFileNameFromResponse(HttpResponseMessage response)
+        {
+            if (!response.Content.Headers.TryGetValues("Content-Disposition", out var contentDispositionValues))
+                throw new InvalidOperationException("Failed to retrieve Content-Disposition header.");
+
+            var contentDisposition = contentDispositionValues.First();
+
+            // this is ugly as hell but works at the moment. We should fix that at backend level
+            var fileName = contentDisposition.Replace("attachment; filename=", string.Empty);
+
+            if (string.IsNullOrWhiteSpace(fileName))
+                throw new InvalidOperationException("Failed to get file name from Content-Disposition header.");
+
+            return fileName;
         }
     }
 }
