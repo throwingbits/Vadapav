@@ -11,12 +11,12 @@ namespace Vadapav
     {
         private readonly HttpClient _client;
 
-        public VadapavClient(string baseAddress, ushort maxRetryCount = 5)
+        public VadapavClient(string baseAddress, int maxRetryCount = 5)
             : this(new Uri(baseAddress), maxRetryCount)
         {
         }
 
-        public VadapavClient(Uri baseAddress, ushort maxRetryCount = 5)
+        public VadapavClient(Uri baseAddress, int maxRetryCount = 5)
         {
             _client = new HttpClient(new HttpRetryMessageHandler(maxRetryCount))
             {

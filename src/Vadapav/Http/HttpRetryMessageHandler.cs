@@ -4,9 +4,9 @@ namespace Vadapav.Http
 {
     internal sealed class HttpRetryMessageHandler : DelegatingHandler
     {
-        private readonly ushort _maxRetryCount;
+        private readonly int _maxRetryCount;
 
-        public HttpRetryMessageHandler(ushort maxRetryCount)
+        public HttpRetryMessageHandler(int maxRetryCount)
             : base(new HttpClientHandler())
         {
             _maxRetryCount = maxRetryCount;
