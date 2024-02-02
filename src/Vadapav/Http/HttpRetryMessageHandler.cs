@@ -36,8 +36,6 @@ namespace Vadapav.Http
                             _ => TimeSpan.Zero,
                         };
 
-                        Console.WriteLine($"Received RetryAfter header. Value: {delay}");
-
                         result.Dispose();
                     }
                     else

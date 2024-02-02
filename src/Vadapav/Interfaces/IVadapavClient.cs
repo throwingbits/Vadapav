@@ -166,5 +166,11 @@ namespace Vadapav
         /// Searches vadapav for directories which match the given search term.
         /// </summary>
         Task<List<VadapavDirectory>> SearchDirectoriesAsync(string searchTerm);
+
+        IVadapavDirectoryIterator CreateDirectoryIterator(VadapavDirectory directory);
+
+        IVadapavDirectoryIterator CreateDirectoryIterator(Guid directoryId);
+
+        IVadapavDirectoryIterator CreateDirectoryIterator(string directoryId);
     }
 }
