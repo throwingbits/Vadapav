@@ -13,7 +13,7 @@ A client library for vadapav.
 </div><br>
 
 ## Getting started
-Take a look at the example Console application which is part of the project solution.
+Take a look at the example Console application which is part of the project solution or head over to the [wiki](https://github.com/throwingbits/Vadapav/wiki).
 
 ## License
 
