@@ -12,8 +12,21 @@ A client library for vadapav.
 <sub>Built with ❤︎ by throwingbits</sub>
 </div><br>
 
-## Getting started
+## 📝 Getting started
 Take a look at the example Console application which is part of the project solution or head over to the [wiki](https://github.com/throwingbits/Vadapav/wiki).
+
+## 🎯 Features
+* Get root directory
+* Get directory by id
+* Get file by id
+* Get file chunk by id
+* Search files and directories by search term
+* Search only files by search term
+* Search only directories by search term
+* Download files
+* Download directories
+* Internal handling of the vadapav API rate limit
+* Resumable downloads
 
 ## License
 
