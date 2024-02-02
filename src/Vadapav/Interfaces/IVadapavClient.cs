@@ -5,6 +5,11 @@ namespace Vadapav
     public interface IVadapavClient
     {
         /// <summary>
+        /// Instance of a <see cref="IVadapavUriBuilder"/> which is used to build valid vadapav URIs.
+        /// </summary>
+        IVadapavUriBuilder UriBuilder { get; }
+
+        /// <summary>
         /// Gets the root directory from vadapav.
         /// </summary>
         Task<VadapavDirectory> GetRootDirectoryAsync();
@@ -17,14 +22,14 @@ namespace Vadapav
         /// <summary>
         /// Gets a specific directory from vadapav.
         /// </summary>
-        /// <param name="id">The id of the directory.</param>
-        Task<VadapavDirectory> GetDirectoryAsync(Guid id);
+        /// <param name="directoryId">The id of the directory.</param>
+        Task<VadapavDirectory> GetDirectoryAsync(Guid directoryId);
 
         /// <summary>
         /// Gets a specific directory from vadapav.
         /// </summary>
-        /// <param name="id">The id of the directory.</param>
-        Task<VadapavDirectory> GetDirectoryAsync(string id);
+        /// <param name="directoryId">The id of the directory.</param>
+        Task<VadapavDirectory> GetDirectoryAsync(string directoryId);
 
         /// <summary>
         /// Gets a specific file from vadapav.
@@ -34,14 +39,14 @@ namespace Vadapav
         /// <summary>
         /// Gets a specific file from vadapav.
         /// </summary>
-        /// <param name="id">The id of the file.</param>
-        Task<(string Name, Stream ContentStream)> GetFileAsync(Guid id);
+        /// <param name="fileId">The id of the file.</param>
+        Task<(string Name, Stream ContentStream)> GetFileAsync(Guid fileId);
 
         /// <summary>
         /// Gets a specific file from vadapav.
         /// </summary>
-        /// <param name="id">The id of the file.</param>
-        Task<(string Name, Stream ContentStream)> GetFileAsync(string id);
+        /// <param name="fileId">The id of the file.</param>
+        Task<(string Name, Stream ContentStream)> GetFileAsync(string fileId);
 
         /// <summary>
         /// Gets a chunk of a specific file from vadapav.
@@ -56,24 +61,24 @@ namespace Vadapav
         /// <summary>
         /// Gets a chunk of a specific file from vadapav.
         /// </summary>
-        /// <param name="id">The id of the file.</param>
+        /// <param name="fileId">The id of the file.</param>
         /// <param name="from">The start index of the chunk.</param>
         /// <param name="to">The end index of the chunk.</param>
         /// <returns></returns>
         Task<(string Name, Stream ContentStream)> GetFileRangeAsync(
-            Guid id,
+            Guid fileId,
             long from,
             long? to);
 
         /// <summary>
         /// Gets a chunk of a specific file from vadapav.
         /// </summary>
-        /// <param name="id">The id of the file.</param>
+        /// <param name="fileId">The id of the file.</param>
         /// <param name="from">The start index of the chunk.</param>
         /// <param name="to">The end index of the chunk.</param>
         /// <returns></returns>
         Task<(string Name, Stream ContentStream)> GetFileRangeAsync(
-            string id,
+            string fileId,
             long from,
             long? to);
 
@@ -91,24 +96,24 @@ namespace Vadapav
         /// <summary>
         /// Downloads a specific from vadapav to the given path.
         /// </summary>
-        /// <param name="id">The id of the file.</param>
+        /// <param name="fileId">The id of the file.</param>
         /// <param name="path">The target path for the file.</param>
         /// <param name="resume">Flag to specify if a download should be resumed when the file is already present.</param>
         /// <returns></returns>
         Task DownloadFileAsync(
-            Guid id,
+            Guid fileId,
             string path,
             bool resume = true);
 
         /// <summary>
         /// Downloads a specific from vadapav to the given path.
         /// </summary>
-        /// <param name="id">The id of the file.</param>
+        /// <param name="fileId">The id of the file.</param>
         /// <param name="path">The target path for the file.</param>
         /// <param name="resume">Flag to specify if a download should be resumed when the file is already present.</param>
         /// <returns></returns>
         Task DownloadFileAsync(
-            string id,
+            string fileId,
             string path,
             bool resume = true);
 

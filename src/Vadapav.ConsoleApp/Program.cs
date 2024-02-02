@@ -4,12 +4,17 @@
     {
         static async Task Main()
         {
-            var client = new VadapavClient("https://vadapav.mov");
+            var x = new VadapavUriBuilder("https://drunk.vadapav.mov");
+            var root = x.GetDirectoryUriString("testid");
+            var file = x.GetFileUriString("testid");
+            var search = x.GetSearchUriString("Wanheda");
 
-            await RootDirectoryExample(client);
-            await GetDirectoryExample(client);
-            await SearchExample(client);
-            await GetFileExample(client);
+            
+
+            //await RootDirectoryExample(client);
+            //await GetDirectoryExample(client);
+            //await SearchExample(client);
+            //await GetFileExample(client);
         }
 
         private static async Task RootDirectoryExample(VadapavClient client)
