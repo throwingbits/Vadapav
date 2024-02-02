@@ -7,7 +7,7 @@ using Vadapav.Models.Http;
 
 namespace Vadapav
 {
-    public class VadapavClient : IVadapavClient
+    public partial class VadapavClient : IVadapavClient
     {
         private readonly HttpClient _client;
         
@@ -141,7 +141,7 @@ namespace Vadapav
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
             request.Headers.Range = new RangeHeaderValue(from, to);
 
-            var response = await _client.SendAsync(request);
+            var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
             response.EnsureSuccessStatusCode();
 
@@ -149,53 +149,6 @@ namespace Vadapav
             var contentStream = await response.Content.ReadAsStreamAsync();
 
             return (fileName, contentStream);
-        }
-
-        /// <inheritdoc/>
-        public Task DownloadFileAsync(VadapavFile file, string path, bool resume = true)
-        {
-            ArgumentNullException
-                .ThrowIfNull(file);
-
-            return DownloadFileAsync(file.Id, path);
-        }
-
-        /// <inheritdoc/>
-        public Task DownloadFileAsync(Guid fileId, string path, bool resume = true)
-        {
-            return DownloadFileAsync(fileId.ToString(), path);
-        }
-
-        /// <inheritdoc/>
-        public async Task DownloadFileAsync(string fileId, string path, bool resume = true)
-        {
-            ArgumentException
-                .ThrowIfNullOrWhiteSpace(fileId);
-
-            ArgumentException
-                .ThrowIfNullOrWhiteSpace(path);
-
-            (string Name, Stream ContentStream) file;
-
-            if (File.Exists(path))
-            {
-                if (!resume)
-                    throw new IOException("The file already exists and the resume parameter is set to: false");
-
-                using var localFile = File.OpenRead(path);
-                var localFileLength = localFile.Length;
-
-                file = await GetFileRangeAsync(fileId, localFileLength, null);
-            }
-            else
-            {
-                file = await GetFileAsync(fileId);
-            }
-
-            using (var fs = new FileStream(path, FileMode.Create))
-            {
-                await file.ContentStream.CopyToAsync(fs);
-            }
         }
 
         /// <inheritdoc/>

@@ -88,6 +88,41 @@ namespace Vadapav
         /// <param name="path">The target path for the file.</param>
         /// <param name="resume">Flag to specify if a download should be resumed when the file is already present.</param>
         /// <returns></returns>
+        Task DownloadDirectoryAsync(
+            VadapavDirectory directory,
+            string path,
+            bool resume = true);
+
+        /// <summary>
+        /// Downloads a specific from vadapav to the given path.
+        /// </summary>
+        /// <param name="directoryId">The id of the file.</param>
+        /// <param name="path">The target path for the file.</param>
+        /// <param name="resume">Flag to specify if a download should be resumed when the file is already present.</param>
+        /// <returns></returns>
+        Task DownloadDirectoryAsync(
+            Guid directoryId,
+            string path,
+            bool resume = true);
+
+        /// <summary>
+        /// Downloads a specific from vadapav to the given path.
+        /// </summary>
+        /// <param name="directoryId">The id of the file.</param>
+        /// <param name="path">The target path for the file.</param>
+        /// <param name="resume">Flag to specify if a download should be resumed when the file is already present.</param>
+        /// <returns></returns>
+        Task DownloadDirectoryAsync(
+            string directoryId,
+            string path,
+            bool resume = true);
+
+        /// <summary>
+        /// Downloads a specific from vadapav to the given path.
+        /// </summary>
+        /// <param name="path">The target path for the file.</param>
+        /// <param name="resume">Flag to specify if a download should be resumed when the file is already present.</param>
+        /// <returns></returns>
         Task DownloadFileAsync(
             VadapavFile file,
             string path,
