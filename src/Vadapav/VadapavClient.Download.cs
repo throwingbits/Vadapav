@@ -4,6 +4,7 @@ namespace Vadapav
 {
     public partial class VadapavClient
     {
+        /// <inheritdoc/>
         public Task DownloadDirectoryAsync(VadapavDirectory directory, string path, bool resume = true)
         {
             ArgumentNullException
