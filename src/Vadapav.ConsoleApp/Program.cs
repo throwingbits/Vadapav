@@ -1,4 +1,6 @@
-﻿namespace Vadapav.ConsoleApp
+﻿using Vadapav.Validation;
+
+namespace Vadapav.ConsoleApp
 {
     internal class Program
     {
@@ -6,10 +8,12 @@
         {
             var client = new VadapavClient("https://drunk.vadapav.mov");
 
-            await RootDirectoryExample(client);
-            await GetDirectoryExample(client);
-            await SearchExample(client);
-            await GetFileExample(client);
+            var result = VadapavUriValidator.ValidatePageUri("");
+
+            //await RootDirectoryExample(client);
+            //await GetDirectoryExample(client);
+            //await SearchExample(client);
+            //await GetFileExample(client);
         }
 
         private static async Task RootDirectoryExample(VadapavClient client)

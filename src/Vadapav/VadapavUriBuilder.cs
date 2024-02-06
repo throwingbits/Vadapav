@@ -1,4 +1,6 @@
-﻿namespace Vadapav
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Vadapav
 {
     public class VadapavUriBuilder : IVadapavUriBuilder
     {
@@ -53,6 +55,28 @@
             return CreateUriWithParameter(
                 $"{ApiBasePath}/{path}",
                 parameter);
+        }
+
+        public ValidationResult Validate(string input)
+        {
+            if (!Uri.TryCreate(input.ToString(), UriKind.Absolute, out var uri))
+                return new ValidationResult($"The value of parameter '{nameof(input)}' is not a valid URI.");
+
+            return Validate(uri);
+        }
+
+        public ValidationResult Validate(Uri uri)
+        {
+            if (!uri.DnsSafeHost.Contains("vadapav.mov"))
+                return new ValidationResult("That's not a valid vadapav URL.");
+
+            if (string.IsNullOrWhiteSpace(uri.Fragment))
+                return new ValidationResult("URI does not ");
+
+            if (!Guid.TryParse(uri.Fragment.Replace("#", string.Empty), out _))
+                return new ValidationResult("That's not a valid vadapav directory URL, because the directory id is not a GUID.");
+
+            return ValidationResult.Success!;
         }
 
         private Uri CreateUriWithParameter(string path, string parameter)
