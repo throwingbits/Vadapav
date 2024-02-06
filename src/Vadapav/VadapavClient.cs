@@ -42,9 +42,7 @@ namespace Vadapav
         /// <inheritdoc/>
         public async Task<VadapavDirectory> GetRootDirectoryAsync()
         {
-            var endpoint = UriBuilder.GetRootDirectoryUri();
-
-            var response = await _client.GetFromJsonAsync<VadapavDirectoryResponse>(endpoint) ??
+            var response = await _client.GetFromJsonAsync<VadapavDirectoryResponse>(UriBuilder.RootDirectoryUri) ??
                 throw new InvalidOperationException("Failed to get root directory.");
 
             return response.Data.AsDirectory();
@@ -71,7 +69,7 @@ namespace Vadapav
             ArgumentException
                 .ThrowIfNullOrWhiteSpace(directoryId);
 
-            var endpoint = UriBuilder.GetDirectoryUri(directoryId);
+            var endpoint = UriBuilder.GetUriForDirectory(directoryId);
 
             var response = await _client.GetFromJsonAsync<VadapavDirectoryResponse>(endpoint) ??
                 throw new InvalidOperationException($"Failed to get directory '{directoryId}'.");
@@ -100,7 +98,7 @@ namespace Vadapav
             ArgumentException
                 .ThrowIfNullOrWhiteSpace(fileId);
 
-            var requestUri = UriBuilder.GetFileUri(fileId);
+            var requestUri = UriBuilder.GetUriForFile(fileId);
 
             var response = await _client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
 
@@ -136,7 +134,7 @@ namespace Vadapav
             if (from > to)
                 throw new InvalidOperationException($"The value of the parameter {nameof(from)} needs to be less than the value of the parameter {nameof(to)}.");
 
-            var requestUri = UriBuilder.GetFileUri(fileId);
+            var requestUri = UriBuilder.GetUriForFile(fileId);
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
             request.Headers.Range = new RangeHeaderValue(from, to);
@@ -157,7 +155,7 @@ namespace Vadapav
             ArgumentException
                 .ThrowIfNullOrWhiteSpace(searchTerm);
 
-            var requestUri = UriBuilder.GetSearchUri(searchTerm);
+            var requestUri = UriBuilder.GetUriForSearch(searchTerm);
 
             var response = await _client.GetFromJsonAsync<VadapavSearchResponse>(requestUri) ??
                 throw new InvalidOperationException($"Failed to get search results for search term '{searchTerm}'.");

@@ -1,16 +1,16 @@
-﻿using Vadapav.Models;
-
-namespace Vadapav
+﻿namespace Vadapav
 {
     public class VadapavUriBuilder : IVadapavUriBuilder
     {
-        private readonly Uri _baseAddress;
-
         private const string ApiBasePath = "/api";
         private const string RootDirectoryPath = "d";
         private const string DirectoryBasePath = "d";
         private const string FileBasePath = "f";
         private const string SearchBasePath = "s";
+
+        private readonly Uri _baseAddress;
+
+        public Uri RootDirectoryUri { get; }
 
         public VadapavUriBuilder(string baseAddress)
             : this(new Uri(baseAddress))
@@ -22,86 +22,64 @@ namespace Vadapav
             ArgumentNullException.ThrowIfNull(baseAddress);
 
             _baseAddress = baseAddress;
+            RootDirectoryUri = CreateUriBuilder(RootDirectoryPath).Uri;
         }
 
-        public string GetRootDirectoryUriString() =>
-            GetRootDirectoryUri().ToString();
-
-        public Uri GetRootDirectoryUri()
-        {
-            var builder = CreateBuilder();
-            builder.Path = $"{ApiBasePath}/{RootDirectoryPath}";
-
-            return builder.Uri;
-        }
-
-        public string GetDirectoryUriString(VadapavDirectory directory) =>
-            GetDirectoryUriString(directory.Id);
-
-        public string GetDirectoryUriString(Guid directoryId) =>
-            GetDirectoryUriString(directoryId.ToString());
-
-        public string GetDirectoryUriString(string directoryId) =>
-            GetDirectoryUri(directoryId).ToString();
-
-        public Uri GetDirectoryUri(VadapavDirectory directory) =>
-            GetDirectoryUri(directory.Id);
-
-        public Uri GetDirectoryUri(Guid directoryId) =>
-            GetDirectoryUri(directoryId.ToString());
-
-        public Uri GetDirectoryUri(string directoryId)
+        public Uri GetUriForDirectory(string directoryId)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(directoryId);
 
-            var builder = CreateBuilder();
-            builder.Path = $"{ApiBasePath}/{DirectoryBasePath}/{directoryId}";
+            return CreateApiUriWithParameter(
+                DirectoryBasePath,
+                directoryId);
+        }
+
+        public Uri GetUriForFile(string fileId)
+        {
+            return CreateUriWithParameter(
+                FileBasePath,
+                fileId);
+        }
+
+        public Uri GetUriForSearch(string searchTerm)
+        {
+            return CreateApiUriWithParameter(
+                SearchBasePath,
+                searchTerm);
+        }
+
+        private Uri CreateApiUriWithParameter(string path, string parameter)
+        {
+            return CreateUriWithParameter(
+                $"{ApiBasePath}/{path}",
+                parameter);
+        }
+
+        private Uri CreateUriWithParameter(string path, string parameter)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(parameter);
+            ArgumentException.ThrowIfNullOrWhiteSpace(path);
+
+            var builder = CreateUriBuilder(path);
+            builder.Path = $"{builder.Path}{parameter}";
 
             return builder.Uri;
         }
 
-        public string GetFileUriString(VadapavFile file) =>
-            GetFileUriString(file.Id);
-
-        public string GetFileUriString(Guid fileId) =>
-            GetFileUriString(fileId.ToString());
-
-        public string GetFileUriString(string fileId) =>
-            GetFileUri(fileId).ToString();
-
-        public Uri GetFileUri(VadapavFile file) =>
-            GetFileUri(file.Id);
-
-        public Uri GetFileUri(Guid directoryId) =>
-            GetFileUri(directoryId.ToString());
-
-        public Uri GetFileUri(string fileId)
+        private UriBuilder CreateUriBuilder(string path)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(fileId);
+            ArgumentException.ThrowIfNullOrWhiteSpace(path);
 
-            var builder = CreateBuilder();
-            builder.Path = $"{FileBasePath}/{fileId}";
+            if (!path.StartsWith('/'))
+                path = $"/{path}";
 
-            return builder.Uri;
-        }
+            if (!path.EndsWith('/'))
+                path = $"{path}/";
 
-        public string GetSearchUriString(string searchTerm) =>
-            GetSearchUri(searchTerm).ToString();
-
-        public Uri GetSearchUri(string searchTerm)
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(searchTerm);
-
-            var builder = CreateBuilder();
-            builder.Path = $"{SearchBasePath}/{searchTerm}";
-
-            return builder.Uri;
-        }
-
-        private UriBuilder CreateBuilder()
-        {
-            var baseAddress = _baseAddress.ToString();
-            var builder = new UriBuilder(baseAddress);
+            var builder = new UriBuilder(_baseAddress)
+            {
+                Path = path
+            };
 
             return builder;
         }
