@@ -25,7 +25,7 @@ Take a look at the example Console application which is part of the project solu
 * Search only directories by search term
 * Download files
 * Download directories
-* Internal handling of the vadapav API rate limit
+* Internal handling of the API rate limit
 * Resumable downloads
 
 ## License
