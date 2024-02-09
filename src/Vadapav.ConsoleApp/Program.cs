@@ -8,12 +8,10 @@ namespace Vadapav.ConsoleApp
         {
             var client = new VadapavClient("https://drunk.vadapav.mov");
 
-            var result = VadapavUriValidator.ValidatePageUri("");
-
-            //await RootDirectoryExample(client);
-            //await GetDirectoryExample(client);
-            //await SearchExample(client);
-            //await GetFileExample(client);
+            await RootDirectoryExample(client);
+            await GetDirectoryExample(client);
+            await SearchExample(client);
+            await GetFileExample(client);
         }
 
         private static async Task RootDirectoryExample(VadapavClient client)

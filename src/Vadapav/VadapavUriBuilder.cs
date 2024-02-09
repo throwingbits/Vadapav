@@ -4,12 +4,6 @@ namespace Vadapav
 {
     public class VadapavUriBuilder : IVadapavUriBuilder
     {
-        private const string ApiBasePath = "/api";
-        private const string RootDirectoryPath = "d";
-        private const string DirectoryBasePath = "d";
-        private const string FileBasePath = "f";
-        private const string SearchBasePath = "s";
-
         private readonly Uri _baseAddress;
 
         public Uri RootDirectoryUri { get; }
@@ -24,7 +18,7 @@ namespace Vadapav
             ArgumentNullException.ThrowIfNull(baseAddress);
 
             _baseAddress = baseAddress;
-            RootDirectoryUri = CreateUriBuilder(RootDirectoryPath).Uri;
+            RootDirectoryUri = CreateUriBuilder(VadapavRouteProvider.DirectoryPathSpecifier).Uri;
         }
 
         public Uri GetUriForDirectory(string directoryId)
@@ -32,37 +26,29 @@ namespace Vadapav
             ArgumentException.ThrowIfNullOrWhiteSpace(directoryId);
 
             return CreateApiUriWithParameter(
-                DirectoryBasePath,
+                VadapavRouteProvider.DirectoryPathSpecifier,
                 directoryId);
         }
 
         public Uri GetUriForFile(string fileId)
         {
             return CreateUriWithParameter(
-                FileBasePath,
+                VadapavRouteProvider.FilePathSpecifier,
                 fileId);
         }
 
         public Uri GetUriForSearch(string searchTerm)
         {
             return CreateApiUriWithParameter(
-                SearchBasePath,
+                VadapavRouteProvider.SearchPathSpecifier,
                 searchTerm);
         }
 
         private Uri CreateApiUriWithParameter(string path, string parameter)
         {
             return CreateUriWithParameter(
-                $"{ApiBasePath}/{path}",
+                $"{VadapavRouteProvider.ApiPath}/{path}",
                 parameter);
-        }
-
-        public ValidationResult Validate(string input)
-        {
-            if (!Uri.TryCreate(input.ToString(), UriKind.Absolute, out var uri))
-                return new ValidationResult($"The value of parameter '{nameof(input)}' is not a valid URI.");
-
-            return Validate(uri);
         }
 
         public ValidationResult Validate(Uri uri)
