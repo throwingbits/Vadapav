@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Vadapav
+﻿namespace Vadapav
 {
     public class VadapavUriBuilder : IVadapavUriBuilder
     {
@@ -18,12 +16,18 @@ namespace Vadapav
             ArgumentNullException.ThrowIfNull(baseAddress);
 
             _baseAddress = baseAddress;
-            RootDirectoryUri = CreateUriBuilder(VadapavRouteProvider.DirectoryPathSpecifier).Uri;
+
+            RootDirectoryUri = CreateApiUriWithParameter(
+                VadapavRouteProvider.DirectoryPathSpecifier,
+                string.Empty);
         }
 
         public Uri GetUriForDirectory(string directoryId)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(directoryId);
+
+            if (!Guid.TryParse(directoryId, out var _))
+                throw new ArgumentException($"Invalid argument: '{nameof(directoryId)}' must be a valid GUID.");
 
             return CreateApiUriWithParameter(
                 VadapavRouteProvider.DirectoryPathSpecifier,
@@ -32,6 +36,9 @@ namespace Vadapav
 
         public Uri GetUriForFile(string fileId)
         {
+            if (!Guid.TryParse(fileId, out var _))
+                throw new ArgumentException($"Invalid argument: '{nameof(fileId)}' must be a valid GUID.");
+
             return CreateUriWithParameter(
                 VadapavRouteProvider.FilePathSpecifier,
                 fileId);
@@ -51,23 +58,8 @@ namespace Vadapav
                 parameter);
         }
 
-        public ValidationResult Validate(Uri uri)
-        {
-            if (!uri.DnsSafeHost.Contains("vadapav.mov"))
-                return new ValidationResult("That's not a valid vadapav URL.");
-
-            if (string.IsNullOrWhiteSpace(uri.Fragment))
-                return new ValidationResult("URI does not ");
-
-            if (!Guid.TryParse(uri.Fragment.Replace("#", string.Empty), out _))
-                return new ValidationResult("That's not a valid vadapav directory URL, because the directory id is not a GUID.");
-
-            return ValidationResult.Success!;
-        }
-
         private Uri CreateUriWithParameter(string path, string parameter)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(parameter);
             ArgumentException.ThrowIfNullOrWhiteSpace(path);
 
             var builder = CreateUriBuilder(path);

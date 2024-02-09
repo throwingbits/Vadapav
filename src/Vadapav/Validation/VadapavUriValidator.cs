@@ -5,11 +5,13 @@ namespace Vadapav.Validation
     public static class VadapavUriValidator
     {
         private static readonly UriValidationResult SuccessResult = new(null);
-        private static readonly UriValidationResult UriParseErrorResult = new("Failed to parse URI.");
-        private static readonly UriValidationResult HostnameErrorResult = new("This URI is not a valid, because the hostname does not match for vadapav.");
+        private static readonly UriValidationResult UriParseErrorResult = new("Invalid URI: Failed to parse.");
+        private static readonly UriValidationResult HostnameErrorResult = new("Invalid URI: Hostname does not match for vadapav.");
 
         public static UriValidationResult ValidateApiURL(string input)
         {
+            ArgumentException.ThrowIfNullOrEmpty(input);
+
             if (!Uri.TryCreate(input, UriKind.Absolute, out var uri))
                 return UriParseErrorResult;
 
@@ -18,11 +20,13 @@ namespace Vadapav.Validation
 
         public static UriValidationResult ValidateApiURL(Uri uri)
         {
+            ArgumentNullException.ThrowIfNull(uri);
+
             if (!uri.DnsSafeHost.Contains("vadapav.mov"))
                 return HostnameErrorResult;
 
             if (uri.Segments.Length != 2 && uri.Segments.Length != 3)
-                return new UriValidationResult("This URI is not valid; there are to many or to less segments.");
+                return new UriValidationResult("Invalid URI: insufficient segments, required are 2 or 3 segments.");
 
             // handle 2 segments, which can only be root directory URI
             if (uri.Segments.Length == 2)
@@ -31,10 +35,10 @@ namespace Vadapav.Validation
                 var secondSegment = uri.Segments[1].Trim('/');
 
                 if (firstSegment != "/")
-                    return new UriValidationResult("This URI is not valid; there are 2 segments in total so the first one must be '/'.");
+                    return new UriValidationResult("Invalid URI: first segment must be '/' when 2 segments are provided.");
 
                 if (secondSegment != VadapavRouteProvider.DirectoryPathSpecifier)
-                    return new UriValidationResult($"This URI is not valid; there are 2 segments in total so the last one must be the directory specifier '{VadapavRouteProvider.DirectoryPathSpecifier}'.");
+                    return new UriValidationResult("Invalid URI: last segment must be the directory specifier when 2 segments are provided.");
 
                 return SuccessResult;
             }
@@ -46,13 +50,13 @@ namespace Vadapav.Validation
                 var thirdSegment = uri.Segments[2];
 
                 if (firstSegment != "/")
-                    return new UriValidationResult("This URI is not valid; there are 3 segments in total so the first one must be '/'.");
+                    return new UriValidationResult("Invalid URI: first segment must be '/' when 3 segments are provided.");
 
                 if (!VadapavRouteProvider.AllSpecifiers.Any(specifier => specifier.Equals(secondSegment)))
-                    return new UriValidationResult($"This URI is not valid; there are 3 segments in total so the second one must be a known specifier.");
+                    return new UriValidationResult("Invalid URI: second segment must be a known specifier when 3 segments are provided.");
 
                 if (!Guid.TryParse(thirdSegment, out var _))
-                    return new UriValidationResult("This URI is not valid; there are 3 segments in total so the last one must be a valid GUID.");
+                    return new UriValidationResult("Invalid URI: last segment must be a valid GUID when 3 segments are provided.");
             }
 
             return SuccessResult;
@@ -60,6 +64,8 @@ namespace Vadapav.Validation
 
         public static UriValidationResult ValidateDirectoryUri(string input)
         {
+            ArgumentException.ThrowIfNullOrEmpty(input);
+
             if (!Uri.TryCreate(input, UriKind.Absolute, out var uri))
                 return UriParseErrorResult;
 
@@ -68,14 +74,16 @@ namespace Vadapav.Validation
 
         public static UriValidationResult ValidateDirectoryUri(Uri uri)
         {
+            ArgumentNullException.ThrowIfNull(uri);
+
             if (!uri.DnsSafeHost.Contains("vadapav.mov"))
                 return HostnameErrorResult;
 
             if (string.IsNullOrWhiteSpace(uri.Fragment))
-                return new UriValidationResult("This URI is not valid; the fragment is null or empty.");
+                return new UriValidationResult("Invalid URI: fragment can't be null or empty.");
 
             if (!Guid.TryParse(uri.Fragment.Replace("#", string.Empty), out var _))
-                return new UriValidationResult("This URI is not valid; the fragment must contain a valid GUID.");
+                return new UriValidationResult("Invalid URI: fragment must be a valid GUID.");
 
             return SuccessResult;
         }
