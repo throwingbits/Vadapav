@@ -55,7 +55,7 @@ namespace Vadapav.Validation
                 if (!VadapavRouteProvider.AllSpecifiers.Any(specifier => specifier.Equals(secondSegment)))
                     return new UriValidationResult("Invalid URI: second segment must be a known specifier when 3 segments are provided.");
 
-                if (!Guid.TryParse(thirdSegment, out var _))
+                if (!Guid.TryParse(thirdSegment, out var _) && secondSegment != VadapavRouteProvider.SearchPathSpecifier)
                     return new UriValidationResult("Invalid URI: last segment must be a valid GUID when 3 segments are provided.");
             }
 
