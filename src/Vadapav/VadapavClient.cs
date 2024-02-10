@@ -42,9 +42,7 @@ namespace Vadapav
         /// <inheritdoc/>
         public async Task<VadapavDirectory> GetRootDirectoryAsync()
         {
-            var endpoint = UriBuilder.GetRootDirectoryUri();
-
-            var response = await _client.GetFromJsonAsync<VadapavDirectoryResponse>(endpoint) ??
+            var response = await _client.GetFromJsonAsync<VadapavDirectoryResponse>(UriBuilder.RootDirectoryUri) ??
                 throw new InvalidOperationException("Failed to get root directory.");
 
             return response.Data.AsDirectory();
@@ -53,8 +51,7 @@ namespace Vadapav
         /// <inheritdoc/>
         public Task<VadapavDirectory> GetDirectoryAsync(VadapavDirectory directory)
         {
-            ArgumentNullException
-                .ThrowIfNull(directory);
+            ArgumentNullException.ThrowIfNull(directory);
 
             return GetDirectoryAsync(directory.Id);
         }
@@ -68,10 +65,9 @@ namespace Vadapav
         /// <inheritdoc/>
         public async Task<VadapavDirectory> GetDirectoryAsync(string directoryId)
         {
-            ArgumentException
-                .ThrowIfNullOrWhiteSpace(directoryId);
+            ArgumentException.ThrowIfNullOrWhiteSpace(directoryId);
 
-            var endpoint = UriBuilder.GetDirectoryUri(directoryId);
+            var endpoint = UriBuilder.GetUriForDirectory(directoryId);
 
             var response = await _client.GetFromJsonAsync<VadapavDirectoryResponse>(endpoint) ??
                 throw new InvalidOperationException($"Failed to get directory '{directoryId}'.");
@@ -82,8 +78,7 @@ namespace Vadapav
         /// <inheritdoc/>
         public Task<(string Name, Stream ContentStream)> GetFileAsync(VadapavFile file)
         {
-            ArgumentNullException
-                .ThrowIfNull(file);
+            ArgumentNullException.ThrowIfNull(file);
 
             return GetFileAsync(file.Id);
         }
@@ -97,10 +92,9 @@ namespace Vadapav
         /// <inheritdoc/>
         public async Task<(string Name, Stream ContentStream)> GetFileAsync(string fileId)
         {
-            ArgumentException
-                .ThrowIfNullOrWhiteSpace(fileId);
+            ArgumentException.ThrowIfNullOrWhiteSpace(fileId);
 
-            var requestUri = UriBuilder.GetFileUri(fileId);
+            var requestUri = UriBuilder.GetUriForFile(fileId);
 
             var response = await _client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
 
@@ -115,8 +109,7 @@ namespace Vadapav
         /// <inheritdoc/>
         public Task<(string Name, Stream ContentStream)> GetFileRangeAsync(VadapavFile file, long from, long? to)
         {
-            ArgumentNullException
-                .ThrowIfNull(file);
+            ArgumentNullException.ThrowIfNull(file);
 
             return GetFileRangeAsync(file.Id, from, to);
         }
@@ -130,13 +123,12 @@ namespace Vadapav
         /// <inheritdoc/>
         public async Task<(string Name, Stream ContentStream)> GetFileRangeAsync(string fileId, long from, long? to)
         {
-            ArgumentException
-                .ThrowIfNullOrWhiteSpace(fileId);
+            ArgumentException.ThrowIfNullOrWhiteSpace(fileId);
 
             if (from > to)
                 throw new InvalidOperationException($"The value of the parameter {nameof(from)} needs to be less than the value of the parameter {nameof(to)}.");
 
-            var requestUri = UriBuilder.GetFileUri(fileId);
+            var requestUri = UriBuilder.GetUriForFile(fileId);
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
             request.Headers.Range = new RangeHeaderValue(from, to);
@@ -154,10 +146,9 @@ namespace Vadapav
         /// <inheritdoc/>
         public async Task<VadapavSearchResults> SearchAsync(string searchTerm)
         {
-            ArgumentException
-                .ThrowIfNullOrWhiteSpace(searchTerm);
+            ArgumentException.ThrowIfNullOrWhiteSpace(searchTerm);
 
-            var requestUri = UriBuilder.GetSearchUri(searchTerm);
+            var requestUri = UriBuilder.GetUriForSearch(searchTerm);
 
             var response = await _client.GetFromJsonAsync<VadapavSearchResponse>(requestUri) ??
                 throw new InvalidOperationException($"Failed to get search results for search term '{searchTerm}'.");
@@ -168,8 +159,7 @@ namespace Vadapav
         /// <inheritdoc/>
         public async Task<List<VadapavFile>> SearchFilesAsync(string searchTerm)
         {
-            ArgumentException
-                .ThrowIfNullOrWhiteSpace(searchTerm);
+            ArgumentException.ThrowIfNullOrWhiteSpace(searchTerm);
 
             var results = await SearchAsync(searchTerm);
 
@@ -179,8 +169,7 @@ namespace Vadapav
         /// <inheritdoc/>
         public async Task<List<VadapavDirectory>> SearchDirectoriesAsync(string searchTerm)
         {
-            ArgumentException
-                .ThrowIfNullOrWhiteSpace(searchTerm);
+            ArgumentException.ThrowIfNullOrWhiteSpace(searchTerm);
 
             var results = await SearchAsync(searchTerm);
 

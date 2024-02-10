@@ -1,10 +1,15 @@
-﻿namespace Vadapav.ConsoleApp
+﻿using Vadapav.Validation;
+
+namespace Vadapav.ConsoleApp
 {
     internal class Program
     {
         static async Task Main()
         {
             var client = new VadapavClient("https://drunk.vadapav.mov");
+
+            var result = VadapavUriValidator.ValidateApiURL("https://drunk.vadapav.mov/s/adasdasdasas");
+
 
             await RootDirectoryExample(client);
             await GetDirectoryExample(client);
