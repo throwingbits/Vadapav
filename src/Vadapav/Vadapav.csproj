@@ -18,7 +18,7 @@
     <Copyright>Copyright (c) 2024 throwingbits</Copyright>
     <Description>Client library for vadapav.</Description>
     <PackageReadmeFile>README-NuGet.md</PackageReadmeFile>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
   <ItemGroup>
