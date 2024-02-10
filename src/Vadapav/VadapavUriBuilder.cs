@@ -2,12 +2,6 @@
 {
     public class VadapavUriBuilder : IVadapavUriBuilder
     {
-        private const string ApiBasePath = "/api";
-        private const string RootDirectoryPath = "d";
-        private const string DirectoryBasePath = "d";
-        private const string FileBasePath = "f";
-        private const string SearchBasePath = "s";
-
         private readonly Uri _baseAddress;
 
         public Uri RootDirectoryUri { get; }
@@ -22,42 +16,50 @@
             ArgumentNullException.ThrowIfNull(baseAddress);
 
             _baseAddress = baseAddress;
-            RootDirectoryUri = CreateUriBuilder(RootDirectoryPath).Uri;
+
+            RootDirectoryUri = CreateApiUriWithParameter(
+                VadapavRouteProvider.DirectoryPathSpecifier,
+                string.Empty);
         }
 
         public Uri GetUriForDirectory(string directoryId)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(directoryId);
 
+            if (!Guid.TryParse(directoryId, out var _))
+                throw new ArgumentException($"Invalid argument: '{nameof(directoryId)}' must be a valid GUID.");
+
             return CreateApiUriWithParameter(
-                DirectoryBasePath,
+                VadapavRouteProvider.DirectoryPathSpecifier,
                 directoryId);
         }
 
         public Uri GetUriForFile(string fileId)
         {
+            if (!Guid.TryParse(fileId, out var _))
+                throw new ArgumentException($"Invalid argument: '{nameof(fileId)}' must be a valid GUID.");
+
             return CreateUriWithParameter(
-                FileBasePath,
+                VadapavRouteProvider.FilePathSpecifier,
                 fileId);
         }
 
         public Uri GetUriForSearch(string searchTerm)
         {
             return CreateApiUriWithParameter(
-                SearchBasePath,
+                VadapavRouteProvider.SearchPathSpecifier,
                 searchTerm);
         }
 
         private Uri CreateApiUriWithParameter(string path, string parameter)
         {
             return CreateUriWithParameter(
-                $"{ApiBasePath}/{path}",
+                $"{VadapavRouteProvider.ApiPath}/{path}",
                 parameter);
         }
 
         private Uri CreateUriWithParameter(string path, string parameter)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(parameter);
             ArgumentException.ThrowIfNullOrWhiteSpace(path);
 
             var builder = CreateUriBuilder(path);
