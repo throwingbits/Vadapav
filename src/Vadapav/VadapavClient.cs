@@ -156,26 +156,6 @@ namespace Vadapav
             return response.Data.WrapAsSearchResults();
         }
 
-        /// <inheritdoc/>
-        public async Task<List<VadapavFile>> SearchFilesAsync(string searchTerm)
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(searchTerm);
-
-            var results = await SearchAsync(searchTerm);
-
-            return results.Files;
-        }
-
-        /// <inheritdoc/>
-        public async Task<List<VadapavDirectory>> SearchDirectoriesAsync(string searchTerm)
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(searchTerm);
-
-            var results = await SearchAsync(searchTerm);
-
-            return results.Directories;
-        }
-
         private string GetFileNameFromResponse(HttpResponseMessage response)
         {
             var contentDispositionHeader = response.Content.Headers.ContentDisposition ?? 

@@ -8,9 +8,6 @@ namespace Vadapav.ConsoleApp
         {
             var client = new VadapavClient("https://drunk.vadapav.mov");
 
-            var result = VadapavUriValidator.ValidateApiURL("https://drunk.vadapav.mov/s/adasdasdasas");
-
-
             await RootDirectoryExample(client);
             await GetDirectoryExample(client);
             await SearchExample(client);
