@@ -25,65 +25,116 @@ namespace Vadapav.Validation
             if (!uri.DnsSafeHost.Contains("vadapav.mov"))
                 return HostnameErrorResult;
 
-            if (uri.Segments.Length != 2 && uri.Segments.Length != 3)
-                return new UriValidationResult("Invalid URI: insufficient segments, required are 2 or 3 segments.");
+            if (uri.Segments.Length != 3 && uri.Segments.Length != 4)
+                return new UriValidationResult("Invalid URI: insufficient segments, required are 3 or 4 segments.");
 
-            // handle 2 segments, which can only be root directory URI
-            if (uri.Segments.Length == 2)
-            {
-                var firstSegment = uri.Segments[0];
-                var secondSegment = uri.Segments[1].Trim('/');
-
-                if (firstSegment != "/")
-                    return new UriValidationResult("Invalid URI: first segment must be '/' when 2 segments are provided.");
-
-                if (secondSegment != VadapavRouteProvider.DirectoryPathSpecifier)
-                    return new UriValidationResult("Invalid URI: last segment must be the directory specifier when 2 segments are provided.");
-
-                return SuccessResult;
-            }
+            var firstSegment = uri.Segments.First();
+            var secondSegment = uri.Segments[1].Trim('/');
+            var thirdSegment = uri.Segments[2].Trim('/');
 
             if (uri.Segments.Length == 3)
             {
-                var firstSegment = uri.Segments[0];
-                var secondSegment = uri.Segments[1].Trim('/');
-                var thirdSegment = uri.Segments[2];
+                return HandleThreeSegmentApiUri(
+                    firstSegment,
+                    secondSegment,
+                    thirdSegment);
+            }
 
-                if (firstSegment != "/")
-                    return new UriValidationResult("Invalid URI: first segment must be '/' when 3 segments are provided.");
+            var forthSegment = uri.Segments[3].Trim('/');
 
-                if (!VadapavRouteProvider.AllSpecifiers.Any(specifier => specifier.Equals(secondSegment)))
-                    return new UriValidationResult("Invalid URI: second segment must be a known specifier when 3 segments are provided.");
+            return HandleFourSegmentApiUri(
+                firstSegment,
+                secondSegment,
+                thirdSegment,
+                forthSegment);
+        }
 
-                if (!Guid.TryParse(thirdSegment, out var _) && secondSegment != VadapavRouteProvider.SearchPathSpecifier)
-                    return new UriValidationResult("Invalid URI: last segment must be a valid GUID when 3 segments are provided.");
+        private static UriValidationResult HandleFourSegmentApiUri(params string[] segments)
+        {
+            var firstSegment = segments[0];
+            var secondSegment = segments[1];
+            var thirdSegment = segments[2];
+            var forthSegment = segments[3];
+
+            if (firstSegment != "/")
+                return new UriValidationResult("Invalid URI: first segment must be '/'.");
+
+            if (secondSegment != VadapavRouteProvider.ApiPath.Trim('/'))
+                return new UriValidationResult("Invalid URI: second segment must be 'api'.");
+
+            if (!VadapavRouteProvider.AllSpecifiers.Any(specifier => specifier.Equals(thirdSegment)))
+                return new UriValidationResult("Invalid URI: third segment must be a known specifier.");
+
+            if (thirdSegment != VadapavRouteProvider.SearchPathSpecifier)
+            {
+                if (!Guid.TryParse(forthSegment, out var _))
+                    return new UriValidationResult("Invalid URI: forth segment must be a valid GUID.");
             }
 
             return SuccessResult;
         }
 
-        public static UriValidationResult ValidateDirectoryUri(string input)
+
+        private static UriValidationResult HandleThreeSegmentApiUri(params string[] segments)
+        {
+            var firstSegment = segments[0];
+            var secondSegment = segments[1];
+            var thirdSegment = segments[2];
+
+            if (firstSegment != "/")
+                return new UriValidationResult("Invalid URI: first segment must be '/'.");
+
+            // must be file uri
+            if (secondSegment == VadapavRouteProvider.FilePathSpecifier)
+            {
+                if (!Guid.TryParse(thirdSegment, out var _))
+                    return new UriValidationResult("Invalid URI: third segment must be a valid GUID.");
+            }
+            // must be root directory uri
+            else if (secondSegment == VadapavRouteProvider.ApiPath.Trim('/'))
+            {
+                if (thirdSegment != VadapavRouteProvider.DirectoryPathSpecifier)
+                    return new UriValidationResult("Invalid URI: third segment must be the directory specifier.");
+            }
+            else
+            {
+                return new UriValidationResult("Invalid URI: failed to map segments.");
+            }
+
+            return SuccessResult;
+        }
+
+        public static UriValidationResult ValidatePageUri(string input)
         {
             ArgumentException.ThrowIfNullOrEmpty(input);
 
             if (!Uri.TryCreate(input, UriKind.Absolute, out var uri))
                 return UriParseErrorResult;
 
-            return ValidateDirectoryUri(uri);
+            return ValidatePageUri(uri);
         }
 
-        public static UriValidationResult ValidateDirectoryUri(Uri uri)
+        public static UriValidationResult ValidatePageUri(Uri uri)
         {
             ArgumentNullException.ThrowIfNull(uri);
 
             if (!uri.DnsSafeHost.Contains("vadapav.mov"))
                 return HostnameErrorResult;
 
-            if (string.IsNullOrWhiteSpace(uri.Fragment))
-                return new UriValidationResult("Invalid URI: fragment can't be null or empty.");
+            if (uri.Segments.Length < 2)
+                return new UriValidationResult("Invalid URI: insufficient segments, there must be 2");
 
-            if (!Guid.TryParse(uri.Fragment.Replace("#", string.Empty), out var _))
-                return new UriValidationResult("Invalid URI: fragment must be a valid GUID.");
+            if (uri.Segments.Length > 2)
+                return new UriValidationResult("Invalid URI: too many segments, there must be 2");
+
+            var firstSegment = uri.Segments.First();
+            var lastSegment = uri.Segments.Last().TrimEnd('/');
+
+            if (firstSegment != "/")
+                return new UriValidationResult("Invalid URI: first segment must be '/'.");
+
+            if (!Guid.TryParse(lastSegment, out var _))
+                return new UriValidationResult("Invalid URI: last segment must be a valid GUID.");
 
             return SuccessResult;
         }
