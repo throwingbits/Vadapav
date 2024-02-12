@@ -153,19 +153,9 @@ namespace Vadapav
             bool resume = true);
 
         /// <summary>
-        /// Searches vadapav for elements which match the given search term.
-        /// </summary>
-        Task<VadapavSearchResults> SearchAsync(string searchTerm);
-
-        /// <summary>
-        /// Searches vadapav for files which match the given search term.
-        /// </summary>
-        Task<List<VadapavFile>> SearchFilesAsync(string searchTerm);
-
-        /// <summary>
         /// Searches vadapav for directories which match the given search term.
         /// </summary>
-        Task<List<VadapavDirectory>> SearchDirectoriesAsync(string searchTerm);
+        Task<VadapavSearchResults> SearchAsync(string searchTerm);
 
         IVadapavDirectoryIterator CreateDirectoryIterator(VadapavDirectory directory);
 
